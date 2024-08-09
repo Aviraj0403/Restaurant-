@@ -61,5 +61,8 @@
   "description": "Debugging Frontend",
   "main": "eslint.config.js",
   "keywords": [],
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+    "node": "18.x"
+  }
 }
