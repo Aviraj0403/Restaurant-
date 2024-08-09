@@ -14,6 +14,7 @@ export default function FoodEditPage() {
   const { foodId } = useParams();
   const [imageUrl, setImageUrl] = useState('');
   const isEditMode = !!foodId;
+
   const navigate = useNavigate();
 
   const {
@@ -26,17 +27,25 @@ export default function FoodEditPage() {
   useEffect(() => {
     if (!isEditMode) return;
 
-    getById(foodId).then(food => {
-      if (!food) return;
-      reset(food);
-      setImageUrl(food.imageUrl);
-    }).catch(error => {
-      toast.error('Failed to load food data');
-      console.error("Error fetching food:", error);
-    });
+    const fetchFood = async () => {
+      try {
+        const food = await getById(foodId);
+        if (!food) {
+          toast.error('Food not found.');
+          return;
+        }
+        reset(food);
+        setImageUrl(food.imageUrl);
+      } catch (error) {
+        console.error('Error fetching food details:', error);
+        toast.error('Failed to fetch food details. Please try again later.');
+      }
+    };
+
+    fetchFood();
   }, [foodId, isEditMode, reset]);
 
-  const submit = async foodData => {
+  const submit = async (foodData) => {
     const food = { ...foodData, imageUrl };
 
     try {
@@ -49,19 +58,19 @@ export default function FoodEditPage() {
         navigate('/admin/editFood/' + newFood.id, { replace: true });
       }
     } catch (error) {
-      toast.error('Failed to save food data');
-      console.error("Error saving food:", error);
+      console.error('Error saving food data:', error);
+      toast.error('Failed to save food data. Please try again later.');
     }
   };
 
-  const upload = async event => {
+  const upload = async (event) => {
+    setImageUrl('');
     try {
-      setImageUrl('');
-      const imageUrl = await uploadImage(event.target.files[0]);
-      setImageUrl(imageUrl);
+      const uploadedImageUrl = await uploadImage(event);
+      setImageUrl(uploadedImageUrl);
     } catch (error) {
-      toast.error('Failed to upload image');
-      console.error("Error uploading image:", error);
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image. Please try again later.');
     }
   };
 
@@ -87,14 +96,14 @@ export default function FoodEditPage() {
           <Input
             type="text"
             label="Name"
-            {...register('name', { required: true, minLength: 5 })}
+            {...register('name', { required: 'Name is required', minLength: { value: 5, message: 'Name must be at least 5 characters long' } })}
             error={errors.name}
           />
 
           <Input
             type="number"
             label="Price"
-            {...register('price', { required: true })}
+            {...register('price', { required: 'Price is required' })}
             error={errors.price}
           />
 
@@ -108,14 +117,14 @@ export default function FoodEditPage() {
           <Input
             type="text"
             label="Origins"
-            {...register('origins', { required: true })}
+            {...register('origins', { required: 'Origins are required' })}
             error={errors.origins}
           />
 
           <Input
             type="text"
             label="Cook Time"
-            {...register('cookTime', { required: true })}
+            {...register('cookTime', { required: 'Cook time is required' })}
             error={errors.cookTime}
           />
 

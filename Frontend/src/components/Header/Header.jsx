@@ -4,7 +4,7 @@ import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../hooks/useAuth';
 import classes from './header.module.css';
 
-const Header = () => {
+export default function Header() {
   const { user, logout } = useAuth();
   const { cart } = useCart();
 
@@ -22,9 +22,11 @@ const Header = () => {
                 <div className={classes.menu}>
                   <Link to="/profile">Profile</Link>
                   <Link to="/orders">Orders</Link>
-                  <button type="button" onClick={logout} className={classes.logout_button}>
+                  <a onClick={logout}>Logout</a>
+                  {/* Use a button for logout to enhance accessibility and semantics
+                  <button className={classes.logout_button} onClick={logout}>
                     Logout
-                  </button>
+                  </button> */}
                 </div>
               </li>
             ) : (
@@ -32,6 +34,7 @@ const Header = () => {
                 <Link to="/login">Login</Link>
               </li>
             )}
+
             <li>
               <Link to="/cart">
                 Cart
@@ -45,6 +48,4 @@ const Header = () => {
       </div>
     </header>
   );
-};
-
-export default Header;
+}

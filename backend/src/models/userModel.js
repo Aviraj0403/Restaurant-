@@ -6,7 +6,7 @@ export const UserSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     address: { type: String, required: true },
-    isAdmin: { type: Boolean, default: false },
+    isAdmin: { type: Boolean, default: false},
     isBlocked: { type: Boolean, default: false },
   },
   {
