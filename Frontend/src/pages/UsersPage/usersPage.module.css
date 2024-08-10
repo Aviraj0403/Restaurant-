@@ -1,34 +1,64 @@
 .container {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-    font-size: 1.2rem;
-  }
-  
-  .list {
-    width: 100%;
-    max-width: 50rem;
-  }
-  
-  .list_item {
-    display: grid;
-    grid-template-columns: 20% 35% 20% 10% 15%;
-    gap: 1%;
-    align-items: center;
-    border-bottom: 1px solid whitesmoke;
-    min-height: 3rem;
-  }
-  
-  .list_item > * {
-    word-wrap: break-word;
-  }
-  
-  h3 {
-    margin-left: 0;
-  }
-  
-  .actions {
-    display: flex;
-    gap: 0.7rem;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: #333; /* Improved text color for better readability */
+}
+
+.list {
+  width: 100%;
+  max-width: 70rem; /* Increased width for better layout on larger screens */
+  background-color: #fff; /* White background for better contrast */
+  border-radius: 8px; /* Rounded corners for a modern look */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  overflow: hidden; /* Prevents overflow from rounding */
+}
+
+.list_item {
+  display: grid;
+  grid-template-columns: 20% 35% 20% 10% 15%;
+  gap: 1%;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0; /* Subtle border color for a cleaner look */
+  min-height: 3rem;
+  padding: 1rem; /* Added padding for better spacing */
+  background-color: #f9f9f9; /* Light background color for rows */
+}
+
+.list_item:nth-child(even) {
+  background-color: #f1f1f1; /* Alternating row colors for readability */
+}
+
+.list_item > * {
+  word-wrap: break-word;
+  text-align: center; /* Center-aligned text for consistency */
+}
+
+h3 {
+  margin: 0;
+  font-weight: 500; /* Slightly bold headings for emphasis */
+  color: #444; /* Darker color for headings */
+}
+
+.actions {
+  display: flex;
+  justify-content: center; /* Center the actions for a balanced look */
+  gap: 0.7rem;
+}
+
+.actions a {
+  text-decoration: none; /* Remove underline for a cleaner look */
+  color: #007bff; /* Primary color for links */
+  font-weight: 500; /* Slightly bold links for visibility */
+}
+
+.actions a:hover {
+  text-decoration: underline; /* Underline on hover for better interaction feedback */
+}
+
+.error {
+  color: red; /* Red color for error messages */
+  font-weight: bold; /* Bold error messages for emphasis */
+}

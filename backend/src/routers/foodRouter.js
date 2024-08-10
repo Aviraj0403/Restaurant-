@@ -33,6 +33,7 @@ router.post(
     });
 
     await food.save();
+    console.log(food);
     console.log("r3");
     res.send(food);
   })
