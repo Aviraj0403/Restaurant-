@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { deleteById, getAll, search } from '../../services/foodService';
 import NotFound from '../../components/NotFound/NotFound';
@@ -12,20 +12,32 @@ export default function FoodsAdminPage() {
   const [foods, setFoods] = useState([]);
   const { searchTerm } = useParams();
 
-  useEffect(() => {
-    const loadFoods = async () => {
-      try {
-        const fetchedFoods = searchTerm ? await search(searchTerm) : await getAll();
-        setFoods(fetchedFoods);
-      } catch (error) {
-        toast.error('Failed to load foods');
-      }
-    };
-
-    loadFoods();
+  // Load foods based on the search term or fetch all foods
+  const loadFoods = useCallback(async () => {
+    try {
+      const fetchedFoods = searchTerm ? await search(searchTerm) : await getAll();
+      setFoods(fetchedFoods);
+    } catch (error) {
+      toast.error('Failed to load foods');
+    }
   }, [searchTerm]);
 
-  const handleDelete = async (food) => {
+  useEffect(() => {
+    loadFoods();
+  }, [loadFoods]);
+
+  // Render NotFound component if no foods are available
+  const FoodsNotFound = () => {
+    if (foods.length > 0) return null;
+
+    const linkRoute = searchTerm ? "/admin/foods" : "/dashboard";
+    const linkText = searchTerm ? "Show All" : "Back to dashboard!";
+
+    return <NotFound linkRoute={linkRoute} linkText={linkText} />;
+  };
+
+  // Delete a food item and update the state
+  const deleteFood = async (food) => {
     const confirmed = window.confirm(`Delete Food ${food.name}?`);
     if (!confirmed) return;
 
@@ -34,18 +46,8 @@ export default function FoodsAdminPage() {
       toast.success(`"${food.name}" has been removed!`);
       setFoods((prevFoods) => prevFoods.filter(f => f.id !== food.id));
     } catch (error) {
-      toast.error('Failed to delete food');
+      toast.error(`Failed to delete "${food.name}"`);
     }
-  };
-
-  const renderFoodsNotFound = () => {
-    if (foods.length > 0) return null;
-
-    return searchTerm ? (
-      <NotFound linkRoute="/admin/foods" linkText="Show All" />
-    ) : (
-      <NotFound linkRoute="/dashboard" linkText="Back to dashboard!" />
-    );
   };
 
   return (
@@ -61,15 +63,15 @@ export default function FoodsAdminPage() {
         <Link to="/admin/addFood" className={classes.add_food}>
           Add Food +
         </Link>
-        {renderFoodsNotFound()}
+        <FoodsNotFound />
         {foods.map(food => (
           <div key={food.id} className={classes.list_item}>
             <img src={food.imageUrl} alt={food.name} />
-            <Link to={'/food/' + food.id}>{food.name}</Link>
+            <Link to={`/food/${food.id}`}>{food.name}</Link>
             <Price price={food.price} />
             <div className={classes.actions}>
-              <Link to={'/admin/editFood/' + food.id}>Edit</Link>
-              <button onClick={() => handleDelete(food)}>Delete</button>
+              <Link to={`/admin/editFood/${food.id}`}>Edit</Link>
+              <Link onClick={() => deleteFood(food)}>Delete</Link>
             </div>
           </div>
         ))}
