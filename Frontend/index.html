@@ -10,11 +10,22 @@
     <!-- Vite uses the public directory for static assets -->
     <link rel="manifest" href="/manifest.json" />
     <title>FoodHunt</title>
+    <style>
+      
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <!-- <script type="module" src="/src/main.jsx"></script> -->
+    <script defer src="/src/main.jsx" type="module"></script>
+    <script>
+       if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+      }
+    </script>
     <!-- Vite will automatically inject the scripts into the body during the build -->
   </body>
 </html>

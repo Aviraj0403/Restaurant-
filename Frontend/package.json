@@ -63,6 +63,6 @@
   "keywords": [],
   "license": "ISC",
   "engines": {
-    "node": "18.x"
+    "node": ">=18.x <21.x"
   }
 }

@@ -28,7 +28,11 @@ export default function Map({ readonly, location, onChange }) {
         keyboard={!readonly}
         attributionControl={false}
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <TileLayer 
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
+          // You can replace this with a different URL for a higher resolution tile provider
+          maxZoom={19}
+        />
         <MapEventsHandler readonly={readonly} location={location} onChange={onChange} />
       </MapContainer>
     </div>
@@ -61,13 +65,13 @@ function MapEventsHandler({ readonly, location, onChange }) {
       map.flyTo(e.latlng, map.getZoom()); // Use current zoom level for smooth transition
     },
     locationerror(e) {
-      toast.error(e.message);
+      toast.error("Unable to retrieve your location. Please check your location settings.");
     },
   });
 
   const handleFindLocation = useCallback(() => {
     if (!readonly) {
-      map.locate();
+      map.locate({ setView: true, maxZoom: 16 }); // Set a specific zoom level for better accuracy
     }
   }, [map, readonly]);
 

@@ -32,10 +32,21 @@ export const register = async (registerData) => {
   }
 };
 
-// Log out a user by removing data from local storage
-export const logout = () => {
-  localStorage.removeItem('user');
+// // Log out a user by removing data from local storage
+// export const logout = () => {
+//   localStorage.removeItem('user');
+// };
+// Log out a user by removing data from local storage and calling logout API if necessary
+export const logout = async () => {
+  try {
+    await axios.post('/api/users/logout'); // Optional: Call the API to handle server-side logout
+    localStorage.removeItem('user'); // Remove user data from local storage
+  } catch (error) {
+    console.error('Logout error:', error);
+    throw new Error('Logout failed. Please try again later.');
+  }
 };
+
 
 // Update the user profile and store the updated user data in local storage
 export const updateProfile = async (user) => {

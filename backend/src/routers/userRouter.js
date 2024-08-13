@@ -23,6 +23,36 @@ router.post(
     res.status(BAD_REQUEST).send('Username or password is invalid');
   })
 );
+//forCart 11August
+
+router.get('/cart', async (req, res) => {
+  const userId = req.user.id; // Assume user is authenticated and user ID is available
+  const user = await UserModel.findById(userId).select('cart'); // Replace with your actual data fetching logic
+  res.json(user.cart || { items: [], totalPrice: 0, totalCount: 0 });
+});
+
+router.post('/cart', async (req, res) => {
+  const userId = req.user.id; // Assume user is authenticated
+  const { items, totalPrice, totalCount } = req.body;
+  const user = await UserModel.findById(userId);
+  user.cart = { items, totalPrice, totalCount };
+  await user.save();
+  res.sendStatus(200);
+});
+
+router.delete('/cart', async (req, res) => {
+  const userId = req.user.id; // Assume user is authenticated
+  const user = await UserModel.findById(userId);
+  user.cart = { items: [], totalPrice: 0, totalCount: 0 };
+  await user.save();
+  res.sendStatus(200);
+});
+
+// Handle logout
+router.post('/logout', handler(async (req, res) => {
+  // Implement token blacklisting or simply inform client to remove the token
+  res.send({ message: 'Logout successful' });
+}));
 
 router.post(
   '/register',
