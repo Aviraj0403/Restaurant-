@@ -20,20 +20,18 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
 app.use(
   cors({
+    origin: [
+      'http://localhost:3000', // Local development URL
+      'https://deploy-mern-1whq.vercel.app', // Vercel deployment URL
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true,
-    origin: ['http://localhost:3000'], // Make sure this matches your frontend URL
   })
 );
-app.use(cors(
-  {
-    origin:["https://deploy-mern-1whq.verel.app"],
-    meethods:["POST","GET"],
-    credentials:true
-  }
 
-))
 
 // Routes
 app.use('/api/foods', foodRouter);
