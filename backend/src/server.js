@@ -39,9 +39,9 @@ app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/upload', uploadRouter);
 
-// Static file serving
-const publicFolder = path.join(__dirname, 'public');
-app.use(express.static(publicFolder));
+// // Static file serving
+// const publicFolder = path.join(__dirname, 'public');
+// app.use(express.static(publicFolder));
 
 // Serve the frontend application
 app.get('*', (req, res) => {
