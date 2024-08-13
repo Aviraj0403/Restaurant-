@@ -25,7 +25,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000', // Local development URL
-      'https://deploy-mern-1whq.vercel.app', // Vercel deployment URL
+      'https://br-tech.vercel.app', // Vercel deployment URL
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true,
