@@ -2,30 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/server.js",
+      "src": "src/server.js",
       "use": "@vercel/node"
-      
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "client/build"
-      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server/server.js"
+      "dest": "/src/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/src/server.js"
     }
-  ],
-  "env": {
-    "MONGO_URI": "@mongo-uri",
-    "JWT_SECRET": "@jwt-secret",
-    "CLOUDINARY_CLOUD_NAME": "@cloudinary-cloud-name",
-    "CLOUDINARY_API_KEY": "@cloudinary-api-key",
-    "CLOUDINARY_API_SECRET": "@cloudinary-api-secret",
-    "MAILGUN_API_KEY": "@mailgun-api-key"
-  }
+  ]
 }
