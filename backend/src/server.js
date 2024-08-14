@@ -9,7 +9,6 @@ import orderRouter from './routers/orderRouter.js';
 import uploadRouter from './routers/uploadRouter.js';
 import { dbconnect } from './config/databaseConfig.js';
 import path, { dirname } from 'path';
-import MongoStore from 'connect-mongo';
 
 dbconnect();
 
@@ -20,28 +19,27 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-
 app.use(
   cors({
     origin: [
       'http://localhost:3000', // Local development URL
       'https://br-tech.vercel.app', // Vercel deployment URL
     ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
 );
 
-// Routes
+// API Routes
 app.use('/api/foods', foodRouter);
 app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/upload', uploadRouter);
 
-// Serve the frontend application (if applicable)
-// Update this part based on your frontend setup
+// Serve React frontend
+app.use(express.static(path.join(__dirname, '../frontend/build')));
 app.get('*', (req, res) => {
-  res.status(404).send('Not Found');
+  res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
 });
 
 // Error handling middleware
@@ -54,4 +52,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log('Listening on port ' + PORT);
 });
-// export default (req, res) => app(req, res);
