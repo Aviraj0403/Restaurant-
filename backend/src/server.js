@@ -39,6 +39,7 @@ app.use('/api/upload', uploadRouter);
 // Serve React frontend
 app.use(express.static(path.join(__dirname, '../frontend/build')));
 app.get('*', (req, res) => {
+  res.send("Hello check")
   res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
 });
 
