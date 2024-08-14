@@ -11,7 +11,7 @@ set('strictQuery', true);
 export const dbconnect = async () => {
   try {
     // Updated connection without deprecated options
-    await connect(process.env.MONGO_URL);
+    await connect(process.env.mongo-uri);
     await seedUsers();
     await seedFoods();
     console.log('Connected to MongoDB Atlas successfully---');
