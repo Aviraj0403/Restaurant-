@@ -50,8 +50,8 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => {
-//   console.log('Listening on port ' + PORT);
-// });
-export default (req, res) => app(req, res);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log('Listening on port ' + PORT);
+});
+// export default (req, res) => app(req, res);
