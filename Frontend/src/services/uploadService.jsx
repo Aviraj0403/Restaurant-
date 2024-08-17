@@ -51,3 +51,4 @@ const getImage = async (event) => {
 
   return file;
 };
+  
