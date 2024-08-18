@@ -14,6 +14,7 @@ export const dbconnect = async () => {
     await connect(process.env.MONGO_URL);
     await seedUsers();
     await seedFoods();
+    // console.log()
     console.log('Connected to MongoDB Atlas successfully---');
   } catch (error) {
     console.log('Error connecting to MongoDB Atlas:', error);
