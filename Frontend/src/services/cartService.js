@@ -21,7 +21,7 @@ export const fetchUserCart = async (userId) => {
 export const updateCartOnServer = async (userId, cartData) => {
   try {
     const token = localStorage.getItem('token');
-    await axios.put(`/api/cart/${userId}`, cartData, {
+    await axios.put(`/api/${userId}`, cartData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

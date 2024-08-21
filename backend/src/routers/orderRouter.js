@@ -1,138 +1,107 @@
 import { Router } from 'express';
-import { FoodModel } from '../models/foodModel.js';
 import handler from 'express-async-handler';
-import admin from '../middleware/adminMid.js';
+import auth from '../middleware/authMid.js';
+import { BAD_REQUEST } from '../constants/httpStatus.js';
+import { OrderModel } from '../models/orderModel.js';
+import { OrderStatus } from '../constants/orderStatus.js';
+import { UserModel } from '../models/userModel.js';
+import { sendEmailReceipt } from '../helpers/mailHelper.js';
 
 const router = Router();
-
-router.get(
-  '/',
-  handler(async (req, res) => {
-    const foods = await FoodModel.find({});
-    console.log("r1");
-    res.send(foods);
-
-  })
-);
+router.use(auth);
 
 router.post(
-  '/',
-  admin,
+  '/create',
   handler(async (req, res) => {
-    const { name, price, tags, favorite, imageUrl, origins, cookTime } =
-      req.body;
-      console.log("r2");
-    const food = new FoodModel({
-      name,
-      price,
-      tags: tags.split ? tags.split(',') : tags,
-      favorite,
-      imageUrl,
-      origins: origins.split ? origins.split(',') : origins,
-      cookTime,
+    const order = req.body;
+
+    if (order.items.length <= 0) res.status(BAD_REQUEST).send('Cart Is Empty!');
+
+    await OrderModel.deleteOne({
+      user: req.user.id,
+      status: OrderStatus.NEW,
     });
 
-    await food.save();
-    console.log(food);
-    console.log("r3");
-    res.send(food);
+    const newOrder = new OrderModel({ ...order, user: req.user.id });
+    await newOrder.save();
+    res.send(newOrder);
   })
 );
 
 router.put(
-  '/',
-  admin,
+  '/pay',
   handler(async (req, res) => {
-    const { id, name, price, tags, favorite, imageUrl, origins, cookTime } =
-      req.body;
+    const { paymentId } = req.body;
+    const order = await getNewOrderForCurrentUser(req);
+    if (!order) {
+      res.status(BAD_REQUEST).send('Order Not Found!');
+      return;
+    }
 
-    await FoodModel.updateOne(
-      { _id: id },
-      {
-        name,
-        price,
-        tags: tags.split ? tags.split(',') : tags,
-        favorite,
-        imageUrl,
-        origins: origins.split ? origins.split(',') : origins,
-        cookTime,
-      }
-    );
-    console.log("r4");
-    res.send();
-  })
-);
+    order.paymentId = paymentId;
+    order.status = OrderStatus.PAYED;
+    await order.save();
 
-router.delete(
-  '/:foodId',
-  admin,
-  handler(async (req, res) => {
-    const { foodId } = req.params;
-    await FoodModel.deleteOne({ _id: foodId });
-    res.send();
+    sendEmailReceipt(order);
+
+    res.send(order._id);
   })
 );
 
 router.get(
-  '/tags',
+  '/track/:orderId',
   handler(async (req, res) => {
-    const tags = await FoodModel.aggregate([
-      {
-        $unwind: '$tags',
-      },
-      {
-        $group: {
-          _id: '$tags',
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: '$_id',
-          count: '$count',
-        },
-      },
-    ]).sort({ count: -1 });
+    const { orderId } = req.params;
+    const user = await UserModel.findById(req.user.id);
 
-    const all = {
-      name: 'All',
-      count: await FoodModel.countDocuments(),
+    const filter = {
+      _id: orderId,
     };
 
-    tags.unshift(all);
+    if (!user.isAdmin) {
+      filter.user = user._id;
+    }
 
-    res.send(tags);
+    const order = await OrderModel.findOne(filter);
+
+    if (!order) return res.send(UNAUTHORIZED);
+
+    return res.send(order);
   })
 );
 
 router.get(
-  '/search/:searchTerm',
+  '/newOrderForCurrentUser',
   handler(async (req, res) => {
-    const { searchTerm } = req.params;
-    const searchRegex = new RegExp(searchTerm, 'i');
-
-    const foods = await FoodModel.find({ name: { $regex: searchRegex } });
-    res.send(foods);
+    const order = await getNewOrderForCurrentUser(req);
+    if (order) res.send(order);
+    else res.status(BAD_REQUEST).send();
   })
 );
+
+router.get('/allstatus', (req, res) => {
+  const allStatus = Object.values(OrderStatus);
+  res.send(allStatus);
+});
 
 router.get(
-  '/tag/:tag',
+  '/:status?',
   handler(async (req, res) => {
-    const { tag } = req.params;
-    const foods = await FoodModel.find({ tags: tag });
-    res.send(foods);
+    const status = req.params.status;
+    const user = await UserModel.findById(req.user.id);
+    const filter = {};
+
+    if (!user.isAdmin) filter.user = user._id;
+    if (status) filter.status = status;
+
+    const orders = await OrderModel.find(filter).sort('-createdAt');
+    res.send(orders);
   })
 );
 
-router.get(
-  '/:foodId',
-  handler(async (req, res) => {
-    const { foodId } = req.params;
-    const food = await FoodModel.findById(foodId);
-    res.send(food);
-  })
-);
-
+const getNewOrderForCurrentUser = async req =>
+  await OrderModel.findOne({
+    user: req.user.id,
+    status: OrderStatus.NEW,
+  }).populate('user');
 export default router;
