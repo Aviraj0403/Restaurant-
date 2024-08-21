@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useAuth } from './useAuth';
+import { fetchUserCart, updateCartOnServer } from '../services/cartService';
 
 const CartContext = createContext(null);
-const CART_KEY = 'cart';
 const EMPTY_CART = {
   items: [],
   totalPrice: 0,
@@ -9,31 +10,58 @@ const EMPTY_CART = {
 };
 
 const CartProvider = ({ children }) => {
-  const initCart = getCartFromLocalStorage();
-  const [cartItems, setCartItems] = useState(initCart.items);
-  const [totalPrice, setTotalPrice] = useState(initCart.totalPrice);
-  const [totalCount, setTotalCount] = useState(initCart.totalCount);
+  const { user } = useAuth();
+  const [cartItems, setCartItems] = useState(EMPTY_CART.items);
+  const [totalPrice, setTotalPrice] = useState(EMPTY_CART.totalPrice);
+  const [totalCount, setTotalCount] = useState(EMPTY_CART.totalCount);
 
   useEffect(() => {
-    const totalPrice = sum(cartItems.map(item => item.price));
-    const totalCount = sum(cartItems.map(item => item.quantity));
-    setTotalPrice(totalPrice);
-    setTotalCount(totalCount);
+    const fetchCartData = async () => {
+      if (user && user._id) {
+        try {
+          const cart = await fetchUserCart(user._id); // Ensure you're passing the correct user ID
+  
+          if (cart && cart.items.length > 0) {
+            setCartItems(cart.items);
+            setTotalPrice(cart.totalPrice);
+            setTotalCount(cart.totalCount);
+          } else {
+            console.warn(`No cart items found for user ${user._id}`);
+            clearCart(); // Reset to empty cart if no items are found
+          }
+        } catch (err) {
+          console.error(`Error fetching cart for user ${user._id}:`, err);
+          // Optionally, you could retry fetching the cart here or show a user notification
+        }
+      } else {
+        clearCart(); // Clear cart when no user is logged in
+      }
+    };
+  
+    fetchCartData();
+  }, [user]); // This will re-run whenever the user object changes
+  
 
-    localStorage.setItem(
-      CART_KEY,
-      JSON.stringify({
-        items: cartItems,
-        totalPrice,
-        totalCount,
-      })
-    );
-  }, [cartItems]);
+  useEffect(() => {
+    const updateCart = async () => {
+      if (user && cartItems.length > 0) {
+        const totalPrice = sum(cartItems.map(item => item.price));
+        const totalCount = sum(cartItems.map(item => item.quantity));
+        setTotalPrice(totalPrice);
+        setTotalCount(totalCount);
 
-  function getCartFromLocalStorage() {
-    const storedCart = localStorage.getItem(CART_KEY);
-    return storedCart ? JSON.parse(storedCart) : EMPTY_CART;
-  }
+        try {
+          await updateCartOnServer(user._id, { items: cartItems, totalPrice, totalCount });
+          console.log(`Cart successfully updated for user ${user._id}`);
+        } catch (err) {
+          console.error(`Failed to update cart on server for user ${user._id}:`, err);
+          // Optional: Show user a notification about the failure
+        }
+      }
+    };
+
+    updateCart();
+  }, [cartItems, user]);
 
   const sum = items => items.reduce((prevValue, curValue) => prevValue + curValue, 0);
 
@@ -65,7 +93,6 @@ const CartProvider = ({ children }) => {
   };
 
   const clearCart = () => {
-    localStorage.removeItem(CART_KEY);
     setCartItems(EMPTY_CART.items);
     setTotalPrice(EMPTY_CART.totalPrice);
     setTotalCount(EMPTY_CART.totalCount);

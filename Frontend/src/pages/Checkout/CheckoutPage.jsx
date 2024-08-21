@@ -13,7 +13,7 @@ import OrderItemsList from '../../components/OrderItemsList/OrderItemsList';
 import Map from '../../components/Map/Map';
 
 export default function CheckoutPage() {
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [order, setOrder] = useState({ ...cart });
@@ -32,6 +32,7 @@ export default function CheckoutPage() {
 
     try {
       await createOrder({ ...order, name: data.name, address: data.address });
+      clearCart(); // Clear the cart after successful order
       navigate('/payment');
     } catch (error) {
       toast.error('Failed to create order. Please try again.');
@@ -64,7 +65,6 @@ export default function CheckoutPage() {
           <Map
             location={order.addressLatLng}
             onChange={(latlng) => {
-              console.log(latlng);
               setOrder({ ...order, addressLatLng: latlng });
             }}
           />
