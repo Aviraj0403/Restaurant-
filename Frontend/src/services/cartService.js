@@ -73,3 +73,21 @@ export const clearCart = async () => {
     throw error;
   }
 };
+// cartService.js
+export const changeQuantity = async (foodId, newQuantity) => {
+  try {
+    const response = await fetch(`/api/cart/items/${foodId}`, {
+      method: 'PATCH', // Use PATCH for partial updates
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${yourToken}`, // Add authentication token if needed
+      },
+      body: JSON.stringify({ quantity: newQuantity }),
+    });
+    if (!response.ok) throw new Error('Failed to update cart quantity');
+    return await response.json();
+  } catch (error) {
+    console.error('Error in changeQuantity service:', error);
+    throw error;
+  }
+};

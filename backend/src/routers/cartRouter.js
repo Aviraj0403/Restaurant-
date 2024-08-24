@@ -44,10 +44,18 @@ router.get('/', handler(async (req, res) => {
     }
     // console.log("cartItm");
     // Calculate total price and total count
-    const totalPrice = (cart.cartItems || []).reduce((sum, item) => sum + (item.quantity * item.food.price), 0);
-    const totalCount = (cart.cartItems || []).reduce((sum, item) => sum + item.quantity, 0);
+    // const totalPrice = (cart.cartItems || []).reduce((sum, item) => sum + (item.quantity * item.food.price), 0);
+    // const totalCount = (cart.cartItems || []).reduce((sum, item) => sum + item.quantity, 0);
+   //update
 
+    // const totalPrice = cart.cartItems.reduce((sum, item) => sum + (item.quantity * item.food.price), 0);
+    // const totalCount = cart.cartItems.reduce((sum, item) => sum + item.quantity, 0);
     // Send the cart data to the client
+    const totalPrice = cart.cartItems.reduce((sum, item) => {
+      return sum + (item.quantity * (item.food?.price || 0));
+    }, 0);
+    const totalCount = cart.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
     res.send({ items: cart.cartItems, totalPrice, totalCount });
   } catch (error) {
     console.error('Error fetching cart:', error.message);
@@ -86,9 +94,12 @@ router.post('/add', handler(async (req, res) => {
     await cart.save();
     const updatedCart = await cartModel.findOne({ userId: req.user.id }).populate('cartItems.food');
 
-    const totalPrice = (updatedCart.cartItems || []).reduce((sum, item) => sum + (item.quantity * item.food.price), 0);
-    const totalCount = (updatedCart.cartItems || []).reduce((sum, item) => sum + item.quantity, 0);
-
+    // const totalPrice = (updatedCart.cartItems || []).reduce((sum, item) => sum + (item.quantity * item.food.price), 0);
+    // const totalCount = (updatedCart.cartItems || []).reduce((sum, item) => sum + item.quantity, 0);
+    // const totalPrice = cart.cartItems.reduce((sum, item) => sum + (item.quantity * item.food.price), 0);
+    // const totalCount = cart.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = updatedCart.cartItems.reduce((sum, item) => sum + (item.quantity * (item.food?.price || 0)), 0);
+    const totalCount = updatedCart.cartItems.reduce((sum, item) => sum + item.quantity, 0);
     res.send({ items: updatedCart.cartItems, totalPrice, totalCount });
   } catch (error) {
     console.error('Error adding to cart:', error.message);

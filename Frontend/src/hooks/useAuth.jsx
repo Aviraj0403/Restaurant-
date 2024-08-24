@@ -8,16 +8,26 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => userService.getUser());
 
-  const login = useCallback(async (email, password) => {
+  // const login = useCallback(async (email, password) => {
+  //   try {
+  //     const userData = await userService.login(email, password);
+  //     setUser(userData);
+  //     toast.success('Login Successful');
+  //   } catch (err) {
+  //     toast.error(err.message || 'Login Failed');
+  //   }
+  // }, []);
+  const login = async (email, password) => {
     try {
       const userData = await userService.login(email, password);
+      localStorage.setItem('user', JSON.stringify(userData)); // Store token
       setUser(userData);
       toast.success('Login Successful');
     } catch (err) {
       toast.error(err.message || 'Login Failed');
     }
-  }, []);
-
+  };
+  
   const register = useCallback(async (data) => {
     try {
       const userData = await userService.register(data);
@@ -28,12 +38,18 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const logout = useCallback(() => {
+  // const logout = useCallback(() => {
+  //   userService.logout();
+  //   setUser(null);
+  //   toast.success('Logout Successful');
+  // }, []);
+  const logout = () => {
     userService.logout();
+    localStorage.removeItem('user'); // Remove token
     setUser(null);
     toast.success('Logout Successful');
-  }, []);
-
+  };
+  
   const updateProfile = useCallback(async (userData) => {
     try {
       const updatedUser = await userService.updateProfile(userData);

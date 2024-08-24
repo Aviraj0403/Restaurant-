@@ -19,18 +19,19 @@ export default function CartPage() {
         <div className={classes.container}>
           <ul className={classes.list}>
             {cart.items.map((item) => (
-              <li key={item.food.id}>
-                <div>
-                  <img src={item.food.imageUrl} alt={item.food.name} />
+              <li key={item.food.id} className={classes.item}>
+                <div className={classes.imageContainer}>
+                  <img src={item.food.imageUrl} alt={item.food.name} className={classes.image} />
                 </div>
-                <div>
-                  <Link to={`/food/${item.food.id}`}>{item.food.name}</Link>
+                <div className={classes.details}>
+                  <Link to={`/food/${item.food.id}`} className={classes.foodLink}>
+                    {item.food.name}
+                  </Link>
                 </div>
-
-                <div>
+                <div className={classes.quantity}>
                   <select
                     value={item.quantity}
-                    onChange={(e) => changeQuantity(item, Number(e.target.value))}
+                    onChange={(e) => changeQuantity(item.food.id, Number(e.target.value))}
                   >
                     {[...Array(10).keys()].map((num) => (
                       <option key={num + 1} value={num + 1}>
@@ -39,12 +40,10 @@ export default function CartPage() {
                     ))}
                   </select>
                 </div>
-
-                <div>
+                <div className={classes.price}>
                   <Price price={item.price} />
                 </div>
-
-                <div>
+                <div className={classes.remove}>
                   <button
                     className={classes.remove_button}
                     onClick={() => removeFromCart(item.food.id)}
@@ -57,14 +56,16 @@ export default function CartPage() {
           </ul>
 
           <div className={classes.checkout}>
-            <div>
-              <div className={classes.foods_count}>{cart.totalCount}</div>
+            <div className={classes.summary}>
+              <div className={classes.foods_count}>{cart.totalCount} Items</div>
               <div className={classes.total_price}>
                 <Price price={cart.totalPrice} />
               </div>
             </div>
 
-            <Link to="/checkout">Proceed To Checkout</Link>
+            <Link to="/checkout" className={classes.checkoutLink}>
+              Proceed To Checkout
+            </Link>
           </div>
         </div>
       )}
