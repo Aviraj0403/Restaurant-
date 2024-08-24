@@ -24,9 +24,12 @@ export const OrderItemSchema = new Schema(
 );
 
 OrderItemSchema.pre('validate', function (next) {
-  this.price = this.food.price * this.quantity;
+  if (this.food && this.food.price) {
+    this.price = this.food.price * this.quantity;
+  }
   next();
 });
+
 
 const orderSchema = new Schema(
   {
@@ -50,4 +53,6 @@ const orderSchema = new Schema(
   }
 );
 
+
 export const OrderModel = model('order', orderSchema);
+

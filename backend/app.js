@@ -4,6 +4,7 @@ import foodRouter from './src/routers/foodRouter.js';
 import userRouter from './src/routers/userRouter.js';
 import orderRouter from './src/routers/orderRouter.js';
 import uploadRouter from './src/routers/uploadRouter.js';
+import cartRouter from './src/routers/cartRouter.js'
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/foods', foodRouter);
 app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/cart', cartRouter);
 
 // Serve the frontend application (if applicable)
 // Update this part based on your frontend setup

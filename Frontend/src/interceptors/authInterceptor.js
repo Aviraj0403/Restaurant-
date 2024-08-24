@@ -6,13 +6,12 @@ axios.interceptors.request.use(
     const user = localStorage.getItem('user');
     const token = user && JSON.parse(user).token;
     if (token) {
-      req.headers['access_token'] = token;
+      req.headers['access_token'] = token; // Ensure header name matches what server expects
     }
     return req;
   },
-  error => {
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
+
 
 export default axios;
