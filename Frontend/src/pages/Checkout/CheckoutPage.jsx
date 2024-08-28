@@ -73,6 +73,14 @@ export default function CheckoutPage() {
           <Button
             type="submit"
             text="Go To Payment"
+           
+            width="100%"
+            height="3rem"
+          />
+          <Button
+            type="submit"
+            
+            text="Pay at Counter"
             width="100%"
             height="3rem"
           />

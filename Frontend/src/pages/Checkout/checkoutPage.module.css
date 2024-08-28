@@ -25,6 +25,7 @@
     flex-basis: 100%;
     display: flex;
     justify-content: center;
+    gap: 1rem;
   }
   .buttons {
     margin: 2rem;

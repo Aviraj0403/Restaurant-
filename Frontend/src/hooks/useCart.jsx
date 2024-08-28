@@ -127,42 +127,7 @@ const CartProvider = ({ children }) => {
     }
   };
 
-  // const changeQuantity = async (foodId, newQuantity) => {
-  //   try {
-  //     if (user) {
-  //       const updatedCartItems = cartItems.map(item =>
-  //         item.food.id === foodId
-  //           ? { ...item, quantity: newQuantity, price: item.food.price * newQuantity }
-  //           : item
-  //       );
-
-  //       const updatedTotalPrice = updatedCartItems.reduce((total, item) => total + item.price, 0);
-  //       const updatedTotalCount = updatedCartItems.reduce((total, item) => total + item.quantity, 0);
-
-  //       setCartItems(updatedCartItems);
-  //       setTotalPrice(updatedTotalPrice);
-  //       setTotalCount(updatedTotalCount);
-
-  //       await cartService.saveCart(updatedCartItems, updatedTotalPrice, updatedTotalCount);
-  //     } else {
-  //       const localCart = getCartFromLocalStorage();
-  //       const itemIndex = localCart.items.findIndex(item => item.food.id === foodId);
-  //       if (itemIndex >= 0) {
-  //         localCart.items[itemIndex].quantity = newQuantity;
-  //         localCart.items[itemIndex].price = localCart.items[itemIndex].food.price * newQuantity;
-  //         localCart.totalPrice = localCart.items.reduce((total, item) => total + item.price, 0);
-  //         localCart.totalCount = localCart.items.reduce((total, item) => total + item.quantity, 0);
-  //         setCartItems(localCart.items);
-  //         setTotalPrice(localCart.totalPrice);
-  //         setTotalCount(localCart.totalCount);
-  //         saveCartToLocalStorage();
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('Error changing quantity:', error);
-  //   }
-  // };
-
+ 
   const changeQuantity = async (foodId, newQuantity) => {
     try {
       if (user) {

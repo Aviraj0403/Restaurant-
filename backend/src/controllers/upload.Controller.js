@@ -1,4 +1,3 @@
-// controllers/imageController.js
 import { BAD_REQUEST } from '../constants/httpStatus.js';
 import { configCloudinary } from '../config/cloudinaryConfig.js';
 
